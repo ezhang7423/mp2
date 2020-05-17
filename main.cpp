@@ -28,7 +28,7 @@ game startup(int argc, char **argv) {
       return parseArgs(argv[1], argv[2], argv[3]);
     } else {
       cout << "USAGE: ./gobang -n <size> -l <bool> (first vs second)" << endl;
-      throw "Wrong args";
+      exit(1);
     }
   } else {
     return game(11, false);
