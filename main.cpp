@@ -4,7 +4,7 @@
 int main()
 {
     using namespace boost::numeric::ublas;
-    matrix<double> m(3, 3);
+    matrix<double> m(300, 300);
     for (unsigned i = 0; i < m.size1(); ++i)
         for (unsigned j = 0; j < m.size2(); ++j)
             m(i, j) = 3 * i + j;
