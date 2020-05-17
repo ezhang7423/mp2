@@ -1,10 +1,12 @@
-#include <stdio.h>
-#include <gsl/gsl_sf_bessel.h>
+#include <boost/numeric/ublas/matrix.hpp>
+#include <boost/numeric/ublas/io.hpp>
 
-int main(void)
+int main()
 {
-    double x = 5.0;
-    double y = gsl_sf_bessel_J0(x);
-    printf("J0(%g) = %.18e\n", x, y);
-    return 0;
+    using namespace boost::numeric::ublas;
+    matrix<double> m(3, 3);
+    for (unsigned i = 0; i < m.size1(); ++i)
+        for (unsigned j = 0; j < m.size2(); ++j)
+            m(i, j) = 3 * i + j;
+    std::cout << m << std::endl;
 }
