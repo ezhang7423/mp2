@@ -22,7 +22,9 @@ game startup(int argc, char **argv) {
     prod = strncmp(std::getenv("PROD"), "FALSE", 5);
   }
   if (argc != 1) {
-    if (argc == 3) {
+    if (argc == 2 && !strncmp(argv[1], "-l", 2)) {
+      return game(11, true);
+    } else if (argc == 3) {
       return parseArgs(argv[1], argv[2]);
     } else if (argc == 4) {
       return parseArgs(argv[1], argv[2], argv[3]);
@@ -37,4 +39,5 @@ game startup(int argc, char **argv) {
 int main(int argc, char **argv) {
   game g = startup(argc, argv);
   g.printBoard();
+  cout << g.c << endl;
 }
