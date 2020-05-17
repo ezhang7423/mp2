@@ -1,9 +1,10 @@
+#pragma once
 #include "matrix.cpp"
+#include <string>
 #include <utility>
 #include <vector>
-
-typedef std::pair<int, int> tuple;
-typedef std::vector<tuple> tuplist;
+typedef std::pair<int, int> tupl;
+typedef std::vector<tupl> tuplist;
 
 class game {
 public:
@@ -17,10 +18,17 @@ public:
     }
     this->h = 3 - this->c; // makes h the other guy
   }
+  std::string won() { return "boi"; }
+  void update(tupl move, int sig) { ; }
+  void printBoard() {
+    if (!prod) {
+      std::cout << this->state << std::endl;
+    }
+  }
   ~game() { state.clear(); }
-  void printBoard() { std::cout << this->state << std::endl; }
+  bool prod;
   matrix state;
-  int c;
-  int h;
+  int c; // color of computer. 1 = Dark, 2 = White
+  int h; // color of human
   tuplist history;
 };

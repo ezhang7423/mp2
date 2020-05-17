@@ -1,11 +1,11 @@
 #include "gamestate.cpp"
+#include "logic/baseline.cpp"
 #include <cstdlib>
 #include <cstring>
-#include <iostream>
-#include <string>
+#include <utility>
+typedef std::pair<int, int> tupl;
 
 using namespace std;
-
 bool prod = true;
 game parseArgs(char *arg1, char *ovalue, char *arg2 = (char *)"-d") {
   int size = 11;
@@ -36,8 +36,46 @@ game startup(int argc, char **argv) {
     return game(11, false);
   }
 }
+
+void print(string s) {
+  if (!prod) {
+    cout << s << endl;
+  }
+}
+tupl getMove() {
+  string s;
+  print("What's your move?");
+  cin >> s;
+  try {
+    int column = s[0] - 97;
+    int row = stoi(s.substr(1, s.size() - 1)) - 1;
+    return make_pair(row, column);
+  } catch (...) {
+    print("Invalid move");
+    return getMove();
+  }
+}
 int main(int argc, char **argv) {
   game g = startup(argc, argv);
+  g.prod = prod;
   g.printBoard();
-  cout << g.c << endl;
+  if (g.c == 1) { // com going first
+    tupl move = think(g);
+    g.update(move, g.c);
+  }
+  while (true) {
+    tupl move = getMove();
+    g.update(move, g.h);
+    if (g.won() != "") {
+      break;
+    }
+    move = think(g);
+    g.update(move, g.c);
+    if (g.won() != "") {
+      break;
+    }
+    g.printBoard();
+  }
+  g.printBoard();
+  cout << "Game has ended. " << g.won() << " has won." << endl;
 }
