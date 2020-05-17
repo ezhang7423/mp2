@@ -19,7 +19,7 @@ public:
     this->h = 3 - this->c; // makes h the other guy
   }
   std::string won() { return "boi"; }
-  void update(tupl move, int sig) { ; }
+  void update(tupl move, int sig) { g.state(move) }
   void printBoard() {
     if (!prod) {
       std::cout << this->state << std::endl;
