@@ -4,6 +4,6 @@ using namespace std;
 int main()
 {
 
-    matrix m(26);
+    matrix m(11);
     cout << m << endl;
 }
