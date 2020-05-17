@@ -5,8 +5,6 @@ we use clang tidy for formatting
 ```
 main.cpp -> drives logic, entrypoint
 
-human.cpp -> if playing with human, print board
-
 gamestate.cpp -> keeps track of move history and board state
 
 matrix.cpp -> matrix helper class

@@ -3,4 +3,4 @@ main:
 optimized:
 	g++ -march=native -Ofast -frename-registers -fopenmp -D_GLIBCXX_PARALLEL main.cpp -o gobang
 dev:
-	nodemon -x "make main && ./gobang || exit 1" main.cpp
+	nodemon -x "make main && PROD=FALSE ./gobang || exit 1" main.cpp

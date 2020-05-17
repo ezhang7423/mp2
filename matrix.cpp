@@ -6,7 +6,6 @@ public:
   matrix() {}
   matrix(int size) { init(size); }
   void init(int size) {
-    std::cout << size << std::endl;
     this->size = size;
     this->arr = new int *[size];
     for (int i = 0; i < size; i++) {
@@ -24,6 +23,7 @@ public:
     for (int i = 0; i < this->size; i++) {
       delete[] arr[i];
     }
+    delete[] arr;
   }
 };
 

@@ -7,6 +7,7 @@ typedef std::vector<tuple> tuplist;
 
 class game {
 public:
+  game(){};
   game(int size, bool first) {
     this->state = matrix(size);
     if (first) {
