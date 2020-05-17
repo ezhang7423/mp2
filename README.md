@@ -1,5 +1,6 @@
 # mp2
 
+```
 main.cpp
 -> drives logic, entrypoint
 
@@ -9,4 +10,4 @@ human.cpp
 logic 
   track.cpp -> send data to cloud
   baseline.cpp -> simple minimax baseline
-  
+```  
