@@ -1,11 +1,9 @@
-#include <boost/numeric/ublas/io.hpp>
-#include <boost/numeric/ublas/matrix.hpp>
+#include "matrix.cpp"
+
+using namespace std;
 
 int main() {
-  using namespace boost::numeric::ublas;
-  matrix<double> m(3, 3);
-  for (unsigned i = 0; i < m.size1(); ++i)
-    for (unsigned j = 0; j < m.size2(); ++j)
-      m(i, j) = 3 * i + j;
-  std::cout << m << std::endl;
+  matrix m(5);
+  m(1, 1) = 5;
+  cout << m << endl;
 }
