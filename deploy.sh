@@ -13,9 +13,9 @@ ssh -tt ete@csil-21.cs.ucsb.edu << EOF
 sleep 2
 curl -O "${LINK}/mp2g.zip"
 mkdir mp2
-unzip mp2g.zip -d mp2
-turnin mp2@changhai_wang mp2
+yes A | unzip mp2g.zip -d mp2
 rm mp2g.zip
-# rm -r mp2
+turnin mp2@changhai_wang mp2
+rm -r mp2
 # yes | turnin mp2@changhai_wang mp2
 EOF
