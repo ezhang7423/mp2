@@ -1,5 +1,6 @@
 #include "gamestate.cpp"
 #include "logic/baseline.cpp"
+#include <cassert>
 #include <cstdlib>
 #include <cstring>
 #include <utility>
@@ -42,17 +43,18 @@ void print(string s) {
     cout << s << endl;
   }
 }
-tupl getMove() {
+tupl getMove(game &g) {
   string s;
   print("What's your move?");
   cin >> s;
   try {
     int column = s[0] - 97;
     int row = stoi(s.substr(1, s.size() - 1)) - 1;
+    assert(g.state3(row, column) == 0);
     return make_pair(row, column);
   } catch (...) {
     print("Invalid move");
-    return getMove();
+    return getMove(g);
   }
 }
 int main(int argc, char **argv) {
@@ -64,7 +66,7 @@ int main(int argc, char **argv) {
     g.update(move, g.c);
   }
   while (true) {
-    tupl move = getMove();
+    tupl move = getMove(g);
     g.update(move, g.h);
     if (g.won() != "") {
       break;

@@ -22,11 +22,7 @@ public:
   }
   friend std::ostream &operator<<(std::ostream &os, matrix &m);
   int &operator()(tupl a) { return arr[a.first][a.second]; }
-
-  int &operator()(int i, int j) {
-    std::cout << "o" << std::endl;
-    return arr[i][j];
-  }
+  int &operator()(int i, int j) { return arr[i][j]; }
   void clear() {
     for (int i = 0; i < this->size; i++) {
       delete[] arr[i];
