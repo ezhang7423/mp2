@@ -3,6 +3,7 @@
 #include <cassert>
 #include <cstdlib>
 #include <cstring>
+#include <string>
 #include <utility>
 typedef std::pair<int, int> tupl;
 
@@ -43,6 +44,11 @@ void print(string s) {
     cout << s << endl;
   }
 }
+string toLetters(tupl move) {
+  char c[3] = {(char)(move.second + 97), (char)move.first, '\0'};
+  return string(c);
+};
+
 tupl getMove(game &g) {
   string s;
   print("What's your move?");
@@ -76,6 +82,7 @@ int main(int argc, char **argv) {
     if (g.won() != "") {
       break;
     }
+    print("Move played: " + toLetters(move));
     g.printBoard();
   }
   g.printBoard();

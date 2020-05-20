@@ -8,7 +8,7 @@ public:
   int **arr;
   matrix() {}
   matrix(int size) { init(size); }
-  void init(int size) {
+  void init(int size, int fill = 0) {
     this->size = size;
     this->arr = new int *[size];
     for (int i = 0; i < size; i++) {
@@ -16,7 +16,7 @@ public:
     }
     for (int i = 0; i < size; i++) {
       for (int j = 0; j < size; j++) {
-        arr[i][j] = 0;
+        arr[i][j] = fill;
       }
     }
   }
