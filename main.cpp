@@ -23,6 +23,7 @@ game startup(int argc, char **argv) {
   if (std::getenv("PROD")) {
     prod = strncmp(std::getenv("PROD"), "FALSE", 5);
   }
+
   if (argc != 1) {
     if (argc == 2 && !strncmp(argv[1], "-l", 2)) {
       return game(11, true);
@@ -39,11 +40,6 @@ game startup(int argc, char **argv) {
   }
 }
 
-void print(string s) {
-  if (!prod) {
-    cout << s << endl;
-  }
-}
 string toLetters(tupl move) {
   char c[3] = {(char)(move.second + 97), (char)move.first, '\0'};
   return string(c);
@@ -64,6 +60,7 @@ tupl getMove(game &g) {
   }
 }
 int main(int argc, char **argv) {
+
   game g = startup(argc, argv);
   g.prod = prod;
   g.printBoard();

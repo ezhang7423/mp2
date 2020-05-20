@@ -1,15 +1,11 @@
 #pragma once
 #include "matrix.cpp"
-#include <string>
-#include <utility>
-#include <vector>
-typedef std::pair<int, int> tupl;
-typedef std::vector<tupl> tuplist;
 
 class game {
 public:
   game(){};
   game(int size, bool first) {
+    this->size = size;
     this->state1 = matrix(size);
     this->state2 = matrix(size);
     this->state3 = matrix(size);
@@ -20,7 +16,71 @@ public:
     }
     this->h = 3 - this->c; // makes h the other guy
   }
-  std::string won() {}
+  bool checkWon(matrix &m) {
+    int current = 0;
+    for (int i = 0; i < size; i++) {
+      for (int j = 0; j < size; j++) {
+        if (m(i, j) != 1) {
+          current = 0;
+        } else {
+          current++;
+        }
+        if (current == 5) {
+          return true;
+        }
+      }
+    }
+    current = 0;
+    for (int j = 0; j < size; j++) {
+      for (int i = 0; i < size; i++) {
+        if (m(i, j) != 1) {
+          current = 0;
+        } else {
+          current++;
+        }
+        if (current == 5) {
+          return true;
+        }
+      }
+    }
+    current = 0;
+    for (int y = 0; y <= 2 * (size - 1); y++) {
+      for (int i = std::max(0, y - size + 1); i <= std::min(size - 1, y); i++) {
+        int j = y - i;
+        if (m(i, j) != 1) {
+          current = 0;
+        } else {
+          current++;
+        }
+        if (current == 5) {
+          return true;
+        }
+      }
+    }
+    current = 0;
+    for (int y = 2 * (size - 1); y >= 0; y--) {
+      for (int i = std::max(0, y - size + 1); i <= std::min(size - 1, y); i++) {
+        int j = size - 1 - (y - i);
+        if (m(i, j) != 1) {
+          current = 0;
+        } else {
+          current++;
+        }
+        if (current == 5) {
+          return true;
+        }
+      }
+    }
+  };
+  std::string won() {
+    if (checkWon(state1)) {
+      return "1";
+    } else if (checkWon(state2)) {
+      return "2";
+    } else {
+      return "";
+    }
+  } // returns string of who has won
   void update(tupl move, int sig) {
     if (sig == 1) {
       this->state1(move) = 1;
@@ -40,6 +100,7 @@ public:
     state2.clear();
     state3.clear();
   }
+  int size;
   bool prod;
   matrix state1;
   matrix state2;

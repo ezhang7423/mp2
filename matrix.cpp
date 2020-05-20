@@ -1,7 +1,6 @@
 #pragma once
-#include <iostream>
-#include <system_error>
-typedef std::pair<int, int> tupl;
+#include "globals.cpp"
+
 class matrix {
 public:
   int size;
