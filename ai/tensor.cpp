@@ -1,6 +1,7 @@
 
 #include <cassert>
 #include <iostream>
+#include <string>
 #include <thread>
 using namespace std;
 // copy
@@ -46,7 +47,11 @@ public:
     }
   }
 
+  static void print(string s, int tn) { cout << tn << ":  " << s << endl; }
   static void add(tensor &res, int tn, tensor &l, tensor &r) {
+    for (int i = 0; i < 3; i++) {
+      assert(l.shape[i] == r.shape[i]);
+    }
     int total = res.shape[0] * res.shape[1] * res.shape[2];
     int ops = total / THREADS_NUMBER;
     int rest = total % THREADS_NUMBER;
@@ -59,12 +64,20 @@ public:
       e = (ops * (tn + 1)) + rest;
     }
     for (int i = s; i < e; i++) {
+      //   print("i: " + to_string(i), tn);
       int ol = res.shape[2] * res.shape[1];
-      int z = ops % ol;
-      int f = ops - ol * z;
-      int y = f % res.shape[2];
-      int x = f / res.shape[2];
-      res(x, y, z) = l(x, y, z) + r(x, y, z);
+      int z = i / ol;
+      int f = i - ol * z;
+      int y = f / res.shape[2];
+      int x = f % res.shape[2];
+      if (z >= 2 || x >= 5 || y >= 3) {
+        cout << "BADD!!!!" << endl;
+        print("x: " + to_string(x), tn);
+        print("y: " + to_string(y), tn);
+        print("z: " + to_string(z), tn);
+      }
+
+      res(z, y, x) = l(z, y, x) + r(z, y, x);
     }
   }
   void (*addd)(tensor &, int, tensor &, tensor &){add};
@@ -103,6 +116,13 @@ std::ostream &operator<<(std::ostream &os, tensor &m) {
 
 int main() {
   tensor b(2, 3, 5);
+  for (int i = 0; i < 5; i++) {
+    b(0, 0, i) = 10;
+  }
   tensor a(2, 3, 5);
+  for (int i = 0; i < 5; i++) {
+    a(0, 0, 0) = 10;
+  }
+
   cout << a + b << endl;
 }
