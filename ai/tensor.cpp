@@ -70,19 +70,49 @@ public:
       int f = i - ol * z;
       int y = f / res.shape[2];
       int x = f % res.shape[2];
-      if (z >= 2 || x >= 5 || y >= 3) {
-        cout << "BADD!!!!" << endl;
-        print("x: " + to_string(x), tn);
-        print("y: " + to_string(y), tn);
-        print("z: " + to_string(z), tn);
-      }
-
       res(z, y, x) = l(z, y, x) + r(z, y, x);
     }
   }
   void (*addd)(tensor &, int, tensor &, tensor &){add};
   tensor &operator+(tensor &b) {
     multithread(addd, *this, *this, b);
+    return *this;
+  }
+
+  static void multiply(tensor &res, int tn, tensor &l, tensor &r) {
+
+    assert(l.shape[2] == r.shape[0]);
+    int total = res.shape[0] * res.shape[1] * res.shape[2];
+    int ops = total / THREADS_NUMBER;
+    int rest = total % THREADS_NUMBER;
+    int s, e;
+    if (tn == 0) {
+      s = 0;
+      e = (ops * (tn + 1) + rest);
+    } else {
+      s = ops * tn + rest;
+      e = (ops * (tn + 1)) + rest;
+    }
+    for (int i = s; i < e; i++) {
+      //   print("i: " + to_string(i), tn);
+      int ol = res.shape[2] * res.shape[1];
+      int z = i / ol;
+      int f = i - ol * z;
+      int y = f / res.shape[2];
+      int x = f % res.shape[2];
+      // if (z >= 2 || x >= 5 || y >= 3) {
+      //   cout << "BADD!!!!" << endl;
+      //   print("x: " + to_string(x), tn);
+      //   print("y: " + to_string(y), tn);
+      //   print("z: " + to_string(z), tn);
+      // }
+
+      res(z, y, x) = l(z, y, x) + r(z, y, x);
+    }
+  }
+  void (*mult)(tensor &, int, tensor &, tensor &){multiply};
+  tensor &operator*(tensor &b) {
+    multithread(mult, *this, *this, b);
     return *this;
   }
 
@@ -114,15 +144,15 @@ std::ostream &operator<<(std::ostream &os, tensor &m) {
   return os;
 }
 
-int main() {
-  tensor b(2, 3, 5);
-  for (int i = 0; i < 5; i++) {
-    b(0, 0, i) = 10;
-  }
-  tensor a(2, 3, 5);
-  for (int i = 0; i < 5; i++) {
-    a(0, 0, 0) = 10;
-  }
-
-  cout << a + b << endl;
-}
+// int main() {
+//   tensor b(2000, 300, 500);
+//   for (int i = 0; i < 2000; i++) {
+//     b(0, 0, i) = 10;
+//   }
+//   tensor a(2000, 300, 500);
+//   for (int i = 0; i < 2000; i++) {
+//     a(0, 0, i) = 10;
+//   }
+//   a + b;
+//   //   cout << a + b << endl;
+// }
