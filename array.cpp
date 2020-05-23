@@ -5,7 +5,8 @@
 #include <thread>
 #include <type_traits>
 #include <utility>
-const int THREADS_NUMBER = 4;
+#include <vector>
+const int THREADS_NUMBER = 1;
 tupl getWork(int amt, int workers, int tn) {
   return std::make_pair(amt * tn / workers, amt * (tn + 1) / workers);
 }
@@ -14,7 +15,20 @@ public:
   int col_size;
   int row_size;
   float **arr;
-
+  mat &operator=(const mat &other) {
+    clear();
+    this->arr = new float *[other.row_size];
+    for (int i = 0; i < row_size; i++) {
+      arr[i] = new float[other.col_size];
+    }
+    for (int i = 0; i < other.row_size; i++) {
+      for (int j = 0; j < other.col_size; j++) {
+        arr[i][j] = other.arr[i][j];
+      }
+    }
+    return *this;
+  }
+  mat(){};
   mat(int row_size, int col_size, float fill = 0)
       : col_size(col_size), row_size(row_size) {
     this->arr = new float *[row_size];
@@ -78,6 +92,7 @@ private:
 };
 mat &operator*(mat &m1, mat &m2) {
   mat *result = new mat(m1.row_size, m2.col_size);
+  std::cout << "START TEST" << std::endl;
   m1.multithread(m1.mult, *result, m1, m2);
   return *result;
 }
@@ -101,30 +116,19 @@ std::ostream &operator<<(std::ostream &os, mat &m) {
   return os;
 }
 
-#include <chrono>
-#include <ctime>
-using namespace std;
-int main() {
-  int MID = 10000000;
-  auto a = std::chrono::steady_clock::now();
-  mat test(MID, 3);
-  for (int i = 0; i < MID; i++) {
-    for (int j = 0; j < 3; j++) {
-      test(i, j) = i + j;
+class mat3 {
+public:
+  int col_size;
+  int row_size;
+  int depth;
+  mat3(int depth, int row_size, int col_size, float fill = 0) {
+    arr.resize(depth);
+    for (auto &&i : arr) {
+      i = new mat(row_size, col_size, fill);
     }
   }
-  mat test2(MID, 3);
-  for (int i = 0; i < MID; i++) {
-    for (int j = 0; j < 3; j++) {
-      test2(i, j) = i + j;
-    }
-  }
-  auto b = std::chrono::steady_clock::now();
-  // cout << test << endl;
-  // cout << test2 << endl;
-  test + test2;
-  cout << THREADS_NUMBER << endl;
-  cout << std::chrono::duration_cast<std::chrono::duration<double>>(b - a)
-              .count()
-       << endl;
-}
+
+  std::vector<mat *> arr;
+
+private:
+};
