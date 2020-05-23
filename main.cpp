@@ -60,9 +60,8 @@ tupl getMove(game &g) {
   }
 }
 int main(int argc, char **argv) {
-
   game g = startup(argc, argv);
-  Madam c;
+  Madam c(400);
   g.prod = prod;
   g.printBoard();
   if (g.c == 1) { // com going first

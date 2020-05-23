@@ -34,6 +34,11 @@ struct node {
 };
 class ts {
 public:
+  void playout(game &g){}; // todo
+  void update(int move){}; // tood
+
+  ts(){};
+  ts(int playouts, int explore) : playouts(playouts), explore(explore) {}
   vpairf getPairs() {
     listf acts;
     listf visits;
@@ -43,7 +48,6 @@ public:
     }
     return std::make_pair(acts, visits);
   }
-  void update(int move){};
   listf mcweight(listf arr, float temp) {
     float weight = 1.0 / temp;
     for (auto &&i : arr) {
@@ -52,7 +56,6 @@ public:
       i *= weight;
     }
   }
-  void playout(game &g){};
 
   vpairf getProbs(game &g, float temp) {
     game tmp;
@@ -68,6 +71,7 @@ public:
 private:
   node *root;
   int playouts;
+  int explore;
 };
 
 class ran {
@@ -99,17 +103,32 @@ private:
 // the ai
 class Madam {
 public:
-  Madam() {}
+  Madam(int playouts = 400, int explore = 5) { brain = ts(playouts, explore); }
+  void reset() { brain.update(-1); }
   tupl think(game &g, float temp = 1e-3) {
     vpairf ap = brain.getProbs(g, temp); // actions, probabilities
     if (!g.isFull()) {
       int move = rng.getRandomMove(ap, training);
-      training ? brain.update(move) : brain.update(-1);
+      brain.update(-1);
       return tupl(move / g.size, move % g.size);
     }
     return tupl(-1, -1);
   }
-  // tupl think_self(game &g, float temp=1e-3) { temp=temperature, stochasity
+  std::pair<tupl, matrix>
+  think_self(game &g, float temp = 1e-3) { // temp=temperature, stochasity
+    vpairf ap = brain.getProbs(g, temp);   // actions, probabilities
+    if (!g.isFull()) {
+      int move = rng.getRandomMove(ap, training);
+      brain.update(move);
+      matrix m(g.size);
+      for (auto i : ap.first) {
+        m((int)i / g.size, (int)i % g.size) = ap.second[i];
+      }
+      return std::make_pair(tupl(move / g.size, move % g.size), m);
+    }
+    return std::make_pair(tupl(-1, -1), matrix(g.size));
+  }
+
   // return std::make_pair(5, 6); }  for playing against self
 private:
   ts brain; // implementation of monte carlo tree search
