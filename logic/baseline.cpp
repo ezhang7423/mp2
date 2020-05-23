@@ -21,7 +21,7 @@
 
 struct node {
   node *parent;
-  unordered_map<string, node *> children;
+  unordered_map<int, node *> children;
   int numvisits;
   int q = 0;
   int u = 0;
@@ -34,15 +34,35 @@ struct node {
 };
 class ts {
 public:
+  vpairf getPairs() {
+    listf acts;
+    listf visits;
+    for (auto i : root->children) {
+      acts.push_back(i.first);
+      visits.push_back(i.second->numvisits);
+    }
+    return std::make_pair(acts, visits);
+  }
+  void update(int move){};
+  listf mcweight(listf arr, float temp) {
+    float weight = 1.0 / temp;
+    for (auto &&i : arr) {
+      i += 1e-10;
+      i = log(i);
+      i *= weight;
+    }
+  }
   void playout(game &g){};
 
-  listf getProbs(game &g, float temp) {
+  vpairf getProbs(game &g, float temp) {
     game tmp;
     for (int i = 0; i < playouts; i++) {
       tmp = g;
       playout(tmp);
     };
     vpairf av = getPairs();
+    av.second = mcweight(av.second, temp); // transform visits to probabilities
+    return av;
   }
 
 private:
@@ -50,14 +70,49 @@ private:
   int playouts;
 };
 
+class ran {
+public:
+  ran() {
+    gen = mt19937(rd());
+    random = std::uniform_real_distribution<>(0, 1);
+  }
+  float getRandom() { return random(gen); }
+  int getRandomMove(vpairf av, bool noisy = false) {
+    float val = random(gen);
+    float cval = 0;
+    int i = 0;
+    while (cval < val) {
+      cval += av.second[i];
+      if (cval >= val) {
+        return av.first[i];
+      }
+      i++;
+    }
+    return -1;
+  }
+
+private:
+  random_device rd;
+  std::uniform_real_distribution<> random;
+  mt19937 gen;
+};
 // the ai
 class Madam {
 public:
+  Madam() {}
   tupl think(game &g, float temp = 1e-3) {
-    listf acts = brain.getProbs(g, temp);
+    vpairf ap = brain.getProbs(g, temp); // actions, probabilities
+    if (!g.isFull()) {
+      int move = rng.getRandomMove(ap, training);
+      training ? brain.update(move) : brain.update(-1);
+      return tupl(move / g.size, move % g.size);
+    }
+    return tupl(-1, -1);
   }
   // tupl think_self(game &g, float temp=1e-3) { temp=temperature, stochasity
   // return std::make_pair(5, 6); }  for playing against self
 private:
-  ts brain;
+  ts brain; // implementation of monte carlo tree search
+  ran rng;
+  bool training;
 };

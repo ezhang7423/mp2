@@ -3,6 +3,7 @@
 #include <cmath>
 #include <iostream>
 #include <iterator>
+#include <random>
 #include <string>
 #include <system_error>
 #include <tuple>
@@ -10,6 +11,7 @@
 #include <vector>
 using namespace std;
 
+typedef std::pair<int, int> tupl;
 typedef vector<int> list;
 typedef vector<float> listf;
 typedef pair<list, list> vpair;
@@ -30,3 +32,11 @@ listf softmax(listf x) {
   }
   return res;
 }
+
+// int TtoInt(tupl a){
+
+// }
+
+// tupl ItoT(tupl b){
+
+// }

@@ -6,6 +6,7 @@ public:
   game(){};
   game(int size, bool first) {
     this->size = size;
+    this->moves = size * size;
     this->state1 = matrix(size);
     this->state2 = matrix(size);
     this->state3 = matrix(size);
@@ -89,7 +90,9 @@ public:
     }
     this->state3(move) = sig;
     this->history.push_back(move);
+    moves--;
   }
+  bool isFull() { return moves == 0; }
   void printBoard() {
     if (!prod) {
       std::cout << this->state3 << std::endl;
@@ -101,6 +104,7 @@ public:
     state3.clear();
   }
   int size;
+  int moves;
   bool prod;
   matrix state1;
   matrix state2;

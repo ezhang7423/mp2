@@ -62,10 +62,11 @@ tupl getMove(game &g) {
 int main(int argc, char **argv) {
 
   game g = startup(argc, argv);
+  Madam c;
   g.prod = prod;
   g.printBoard();
   if (g.c == 1) { // com going first
-    tupl move = think(g);
+    tupl move = c.think(g);
     g.update(move, g.c);
   }
   while (true) {
@@ -74,7 +75,7 @@ int main(int argc, char **argv) {
     if (g.won() != "") {
       break;
     }
-    move = think(g);
+    move = c.think(g);
     g.update(move, g.c);
     if (g.won() != "") {
       break;
