@@ -35,12 +35,14 @@ struct node {
 class ts {
 public:
   void playout(game &g){};
+
   listf getProbs(game &g, float temp) {
     game tmp;
     for (int i = 0; i < playouts; i++) {
       tmp = g;
       playout(tmp);
     };
+    vpairf av = getPairs();
   }
 
 private:

@@ -1,7 +1,7 @@
 main:
-	g++ -pthread main.cpp -o gobang
+	g++ -pthread -fsanitize=address -std=c++17 -fsanitize=undefined -Wall -Wextra main.cpp -o gobang
 optimized:
-	g++ -pthread -march=native -Ofast -frename-registers -fopenmp -D_GLIBCXX_PARALLEL main.cpp -o gobang
+	g++ -std=c++17 -pthread -march=native -Ofast -frename-registers -fopenmp -D_GLIBCXX_PARALLEL main.cpp -o gobang
 dev:
 	nodemon -x "make main && PROD=FALSE ./gobang || exit 1" main.cpp
 deploy:
