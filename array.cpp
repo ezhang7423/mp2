@@ -1,12 +1,20 @@
 #include "globals.cpp"
+#include <cassert>
+#include <iostream>
 #include <string>
 #include <thread>
+#include <type_traits>
+#include <utility>
 const int THREADS_NUMBER = 4;
+tupl getWork(int amt, int workers, int tn) {
+  return std::make_pair(amt * tn / workers, amt * (tn + 1) / workers);
+}
 class mat {
 public:
   int col_size;
   int row_size;
   float **arr;
+
   mat(int row_size, int col_size, float fill = 0)
       : col_size(col_size), row_size(row_size) {
     this->arr = new float *[row_size];
@@ -23,7 +31,7 @@ public:
   float &operator()(tupl a) { return arr[a.first][a.second]; }
   float &operator()(int i, int j) { return arr[i][j]; }
   friend mat &operator*(mat &m1, mat &m2);
-  friend void multiplication_thr(mat &m1, mat &m2, mat &result, const float tn);
+  friend mat &operator+(mat &m1, mat &m2);
   ~mat() { clear(); }
   void clear() {
     for (int i = 0; i < this->row_size; i++) {
@@ -33,25 +41,33 @@ public:
   }
 
 private:
-  static void multithread(void (*exec)(mat &res, int tn, mat &l, mat &r),
+  static void multithread(void (*exec)(mat &res, mat &l, mat &r, int tn),
                           mat &res, mat &l, mat &r) {
     std::thread threads[THREADS_NUMBER];
     for (int i = 0; i < THREADS_NUMBER; ++i) {
+
       threads[i] =
-          std::thread(exec, std::ref(res), i, std::ref(l), std::ref(r));
+          std::thread(exec, std::ref(res), std::ref(l), std::ref(r), i);
     }
+
     for (int i = 0; i < THREADS_NUMBER; ++i) {
       // std::cout << "Join thread " << i << std::endl;
       threads[i].join();
     }
   }
-  static void multiplication_thr(mat &m1, mat &m2, mat &result, int tn) {
-    tn--;
-    int start, end;
-    start = (m1.row_size * m2.col_size * tn) / THREADS_NUMBER;
-    end = (m1.row_size * m2.col_size * (tn + 1)) / THREADS_NUMBER;
+  static void add(mat &result, mat &m1, mat &m2, int tn) {
+    tupl work = getWork(m1.row_size * m1.col_size, THREADS_NUMBER, tn);
+    for (int i = work.first; i < work.second; ++i) {
+      int r = i / m2.col_size;
+      int c = i % m2.col_size;
+      result(r, c) = m1(r, c) + m2(r, c);
+    }
+  }
+  static void mult(mat &result, mat &m1, mat &m2, int tn) {
 
-    for (int i = start; i < end; ++i) {
+    tupl work = getWork(m1.row_size * m2.col_size, THREADS_NUMBER, tn);
+
+    for (int i = work.first; i < work.second; ++i) {
       int r = i / m2.col_size;
       int c = i % m2.col_size;
       for (int j = 0; j < m2.row_size; ++j) {
@@ -61,15 +77,17 @@ private:
   }
 };
 mat &operator*(mat &m1, mat &m2) {
-  std::thread threads[THREADS_NUMBER];
   mat *result = new mat(m1.row_size, m2.col_size);
-  for (int i = 0; i < THREADS_NUMBER; ++i) {
-    threads[i] = std::thread(m1.multiplication_thr, std::ref(m1), std::ref(m2),
-                             std::ref(*result), std::ref(i));
-  }
-  for (int i = 0; i < THREADS_NUMBER; ++i) {
-    threads[i].join();
-  }
+  m1.multithread(m1.mult, *result, m1, m2);
+  return *result;
+}
+
+mat &operator+(mat &m1, mat &m2) {
+  assert(m1.col_size == m2.col_size);
+  assert(m1.row_size == m2.row_size);
+  // std::cout << "hi" << std::endl;
+  mat *result = new mat(m1.row_size, m1.col_size);
+  m1.multithread(m1.add, *result, m1, m2);
   return *result;
 }
 
@@ -87,22 +105,24 @@ std::ostream &operator<<(std::ostream &os, mat &m) {
 #include <ctime>
 using namespace std;
 int main() {
-  int MID = 5000;
+  int MID = 10000000;
+  auto a = std::chrono::steady_clock::now();
   mat test(MID, 3);
   for (int i = 0; i < MID; i++) {
     for (int j = 0; j < 3; j++) {
       test(i, j) = i + j;
     }
   }
-  mat test2(3, MID);
-  for (int i = 0; i < 3; i++) {
-    for (int j = 0; j < MID; j++) {
-      test2(i, j) = ((i % 2) * 2 - 1) * i * j;
+  mat test2(MID, 3);
+  for (int i = 0; i < MID; i++) {
+    for (int j = 0; j < 3; j++) {
+      test2(i, j) = i + j;
     }
   }
-  auto a = std::chrono::steady_clock::now();
-  test *test2;
   auto b = std::chrono::steady_clock::now();
+  // cout << test << endl;
+  // cout << test2 << endl;
+  test + test2;
   cout << THREADS_NUMBER << endl;
   cout << std::chrono::duration_cast<std::chrono::duration<double>>(b - a)
               .count()
