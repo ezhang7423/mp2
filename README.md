@@ -15,5 +15,13 @@ logic
   baseline.cpp -> simple minimax baseline
 ```
 
+---
+
+next steps:
+
+- implement batch normalization/kernel regularization
+- implement residual layer
+- optimize speed
+
 for optimizations:
 https://stackoverflow.com/questions/14492436/g-optimization-beyond-o3-ofast

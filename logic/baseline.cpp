@@ -55,7 +55,7 @@ public:
       i = log(i);
       i *= weight;
     }
-    return listf(-1); // just for compiler
+    return arr;
   }
 
   vpairf getProbs(game &g, float temp) {

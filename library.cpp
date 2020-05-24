@@ -29,9 +29,9 @@ template <class T> const T &max(const T &a, const T &b) {
 }
 class ran {
 public:
-  ran() {
+  ran(int start = 0, int end = 1) {
     gen = std::mt19937(rd());
-    random = std::uniform_real_distribution<>(0, 1);
+    random = std::uniform_real_distribution<>(start, end);
   }
   float getRandom() { return random(gen); }
   int getRandomMove(vpairf av, bool noisy = false) {
@@ -55,9 +55,24 @@ private:
 };
 class mat {
 public:
-  int col_size;
-  int row_size;
-  float **arr;
+  mat(int row_size, int col_size, float fill = 0, bool rand = false)
+      : col_size(col_size), row_size(row_size) {
+    ran *r;
+    if (rand) {
+      r = new ran(-1);
+    } else {
+      r = new ran(0, 0);
+    }
+    this->arr = new float *[row_size];
+    for (int i = 0; i < row_size; i++) {
+      arr[i] = new float[col_size];
+    }
+    for (int i = 0; i < row_size; i++) {
+      for (int j = 0; j < col_size; j++) {
+        arr[i][j] = fill + r->getRandom();
+      }
+    }
+  }
   mat &operator=(const mat &other) {
     clear();
     this->arr = new float *[other.row_size];
@@ -72,20 +87,7 @@ public:
     return *this;
   }
   mat(){};
-  mat(int row_size, int col_size, float fill = 0, bool rand = false)
-      : col_size(col_size), row_size(row_size) {
-    if (rand) {
-    }
-    this->arr = new float *[row_size];
-    for (int i = 0; i < row_size; i++) {
-      arr[i] = new float[col_size];
-    }
-    for (int i = 0; i < row_size; i++) {
-      for (int j = 0; j < col_size; j++) {
-        arr[i][j] = fill;
-      }
-    }
-  }
+
   friend std::ostream &operator<<(std::ostream &os, mat &m);
   float &operator()(tupl a) { return arr[a.first][a.second]; }
   float &operator()(int i, int j) { return arr[i][j]; }
@@ -100,6 +102,9 @@ public:
     }
     delete[] arr;
   }
+  int col_size;
+  int row_size;
+  float **arr;
 
 private:
   static void multithread(void (*exec)(mat &res, mat &l, mat &r, int tn),
