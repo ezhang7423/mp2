@@ -74,32 +74,6 @@ private:
   int explore;
 };
 
-class ran {
-public:
-  ran() {
-    gen = mt19937(rd());
-    random = std::uniform_real_distribution<>(0, 1);
-  }
-  float getRandom() { return random(gen); }
-  int getRandomMove(vpairf av, bool noisy = false) {
-    float val = random(gen);
-    float cval = 0;
-    int i = 0;
-    while (cval < val) {
-      cval += av.second[i];
-      if (cval >= val) {
-        return av.first[i];
-      }
-      i++;
-    }
-    return -1;
-  }
-
-private:
-  random_device rd;
-  std::uniform_real_distribution<> random;
-  mt19937 gen;
-};
 // the ai
 class Madam {
 public:

@@ -1,10 +1,5 @@
 #pragma once
-#include <iostream>
-#include <string>
-#include <system_error>
-#include <tuple>
-#include <utility>
-#include <vector>
+#include "library.cpp"
 extern bool prod;
 
 typedef std::pair<int, int> tupl;

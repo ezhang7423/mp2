@@ -1,21 +1,7 @@
 #pragma once
-#include <algorithm>
-#include <cmath>
-#include <iostream>
-#include <iterator>
-#include <random>
-#include <string>
-#include <system_error>
-#include <tuple>
-#include <utility>
-#include <vector>
-using namespace std;
+#include "../library.cpp"
 
-typedef std::pair<int, int> tupl;
-typedef vector<int> list;
-typedef vector<float> listf;
-typedef pair<list, list> vpair;
-typedef pair<listf, listf> vpairf;
+using namespace std;
 
 listf softmax(listf x) {
   float max = *max_element(begin(x), end(x));
