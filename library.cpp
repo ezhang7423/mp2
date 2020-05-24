@@ -5,6 +5,7 @@
 #include <cmath>
 #include <iostream>
 #include <iterator>
+#include <ostream>
 #include <random>
 #include <string>
 #include <system_error>
@@ -55,6 +56,19 @@ private:
 };
 class mat {
 public:
+  mat(mat &other) {
+    row_size = other.row_size;
+    col_size = other.col_size;
+    this->arr = new float *[other.row_size];
+    for (int i = 0; i < other.row_size; i++) {
+      arr[i] = new float[other.col_size];
+    }
+    for (int i = 0; i < other.row_size; i++) {
+      for (int j = 0; j < other.col_size; j++) {
+        arr[i][j] = other.arr[i][j];
+      }
+    }
+  }
   mat(int row_size, int col_size, float fill = 0, bool rand = false)
       : col_size(col_size), row_size(row_size) {
     ran *r;
@@ -72,11 +86,14 @@ public:
         arr[i][j] = fill + r->getRandom();
       }
     }
+    delete r;
   }
   mat &operator=(const mat &other) {
     clear();
+    row_size = other.row_size;
+    col_size = other.col_size;
     this->arr = new float *[other.row_size];
-    for (int i = 0; i < row_size; i++) {
+    for (int i = 0; i < other.row_size; i++) {
       arr[i] = new float[other.col_size];
     }
     for (int i = 0; i < other.row_size; i++) {
@@ -177,16 +194,17 @@ std::ostream &operator<<(std::ostream &os, mat &m) {
 class mat3 {
 public:
   mat3(){};
-  int col_size;
-  int row_size;
   int depth;
+  int row_size;
+  int col_size;
   void relu() {
     for (auto &&i : arr) {
       i->relu();
     }
   }
-  mat3(int depth, int row_size, int col_size, float fill = 0,
-       bool rand = false) {
+  mat3(int depth, int row_size, int col_size, float fill = 0, bool rand = false)
+      : depth(depth), row_size(row_size), col_size(col_size) {
+
     arr.resize(depth);
     for (auto &&i : arr) {
       i = new mat(row_size, col_size, fill, rand);
@@ -198,8 +216,8 @@ public:
     }
   }
   ~mat3() {
-    for (auto &&i : arr) {
-      i->clear();
+    for (auto i : arr) {
+      delete i;
     }
   }
   std::vector<mat *> arr;

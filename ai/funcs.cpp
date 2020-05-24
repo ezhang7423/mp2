@@ -27,13 +27,14 @@ template <typename T> std::vector<T> arange(T start, T stop, T step = 1) {
 }
 
 mat broadcast(list a, list b) {
-  mat *res = new mat(b.size(), a.size());
-  for (int i = 0; i < b.size(); i++) {
-    for (int j = 0; j < a.size(); j++) {
-      (*res)(i, j) = b[i] + a[j];
+  // mat *res = new mat(b.size(), a.size());
+  mat res(b.size(), a.size());
+  for (unsigned i = 0; i < b.size(); i++) {
+    for (unsigned j = 0; j < a.size(); j++) {
+      res(i, j) = b[i] + a[j];
     }
   }
-  return *res;
+  return res;
 };
 mat reshape(list rp, int width, int height) {
   if (width == -1) {
@@ -41,16 +42,16 @@ mat reshape(list rp, int width, int height) {
   } else if (height == -1) {
     height = rp.size() / width;
   }
-  mat *res = new mat(height, width);
+  mat res(height, width);
   int j = 0;
   for (auto i : rp) {
     // cout << (to_string(i)) << endl;
     int r = j / width;
     int c = j % width;
-    (*res)(r, c) = i;
+    res(r, c) = i;
     j++;
   }
-  return *res;
+  return res;
 };
 list repeat(list rp, int num) {
   list res(rp.size() * num);
