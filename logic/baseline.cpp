@@ -1,5 +1,6 @@
 #include "../ai/funcs.cpp"
 #include "../gamestate.cpp"
+#include <corecrt_math.h>
 #include <unordered_map>
 #include <utility>
 // alpha zero resources:
@@ -20,17 +21,50 @@
 // monte carlo tree search
 
 struct node {
+  node(node *p, float prior) {
+    this->p = prior;
+    this->parent = p;
+  }
   node *parent;
-  unordered_map<int, node *> children;
+  unordered_map<int, node *> children; // inefficient for looping?
   int numvisits;
   int q = 0;
   int u = 0;
   int p = 0;
-  void expand();
-  void select();
-  void update();
-  void update_recursive();
-  void get_val();
+  void expand(vpairf priors) {
+    for (int i = 0; i < priors.second.size(); i++) {
+      node *tmp;
+      if (!children[priors.first[i]]) {
+        tmp = new node(this, priors.second[i]);
+        children[priors.first[i]] = tmp;
+      }
+    }
+  };
+  int select(float puct) {
+    int best;
+    int bestval = -INFINITY;
+    for (auto i : children) {
+      if (i.second->get_val(puct) > bestval) {
+        best = i.first;
+      }
+    }
+    return best;
+  };
+  void update(float q) {
+    this->numvisits++;
+    this->q += 1 * (q - this->q) / this->numvisits; // avg value
+  };
+  void update_recursive(float q) {
+    if (this->parent) {
+      this->parent->update_recursive(-q);
+    }
+    this->update(q);
+  };
+  float get_val(float puct) {
+    this->u = (puct * this->p * sqrt(this->parent->numvisits) /
+               (1 + this->numvisits));
+    return (this->q + this->u);
+  };
 };
 class ts {
 public:
