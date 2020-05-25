@@ -1,1 +1,1 @@
-class alphazero {};
+class alphazero {}; // handle training

@@ -72,11 +72,3 @@ list tile(list rp, int num) {
   }
   return res;
 }
-
-// int TtoInt(tupl a){
-
-// }
-
-// tupl ItoT(tupl b){
-
-// }

@@ -75,3 +75,5 @@ private:
   mat3 filters;
   mat bias;
 };
+
+class Full {};
