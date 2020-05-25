@@ -19,7 +19,6 @@
 // no rollouts, and no computation of upper confidence
 
 // monte carlo tree search
-
 struct node {
   node(node *p, float prior) {
     this->p = prior;
@@ -40,12 +39,12 @@ struct node {
       }
     }
   };
-  int select(float puct) {
-    int best;
+  pair<int, node *> select(float puct) {
+    pair<int, node *> best;
     int bestval = -INFINITY;
     for (auto i : children) {
       if (i.second->get_val(puct) > bestval) {
-        best = i.first;
+        best = i;
       }
     }
     return best;
@@ -66,13 +65,56 @@ struct node {
     return (this->q + this->u);
   };
 };
+typedef pair<int, node *> avpair;
 class ts {
 public:
-  void playout(game &g){}; // todo
-  void update(int move){}; // tood
+  void playout(game &g) {
+    node *n = root;
+    while (true) {
+      if (n->children.size() == 0) {
+        break;
+      }
+      avpair av = n->select(this->pucts);
+      g.update(i2tupl(av.first, g.size));
+    }
+    // vpairf av = policy(state);
+    int leaf;
+    if (g.isFull() || g.checkWon(g.state3)) {
+      if (g.isFull()) {
+        leaf = 0;
+      }
+      if ((g.current == 2) && (g.checkWon(g.state2))) {
+        leaf = 1;
+      } else if ((g.current == 3) && (g.checkWon(g.state3))) {
+        leaf = 1;
+      } else {
+        leaf = -1;
+      }
+    } else {
+      // expand
+    }
+    n->update_recursive(-leaf);
+  };
+  void update(int last) {
+    bool invicinity = false;
+    for (auto i : root->children) {
+      if (last == i.first) {
+        invicinity = true;
+        break;
+      }
+    }
+    if (invicinity) {
+      root = root->children[last];
+      root->parent = nullptr;
+    } else {
+      root = new node(nullptr, 1.0);
+    }
+  };
 
   ts(){};
-  ts(int playouts, int explore) : playouts(playouts), explore(explore) {}
+  ts(int playouts, int pucts) : playouts(playouts), pucts(pucts) {
+    root = new node(nullptr, 1.0);
+  }
   vpairf getPairs() {
     listf acts;
     listf visits;
@@ -106,13 +148,13 @@ public:
 private:
   node *root;
   int playouts;
-  int explore;
+  int pucts;
 };
 
 // the ai
 class Madam {
 public:
-  Madam(int playouts = 400, int explore = 5) { brain = ts(playouts, explore); }
+  Madam(int playouts = 400, int pucts = 5) { brain = ts(playouts, pucts); }
   void reset() { brain.update(-1); }
   tupl think(game &g, float temp = 1e-3) {
     vpairf ap = brain.getProbs(g, temp); // actions, probabilities

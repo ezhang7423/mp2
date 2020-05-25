@@ -25,6 +25,9 @@ tupl getWork(int amt, int workers, int tn) {
   return std::make_pair(amt * tn / workers, amt * (tn + 1) / workers);
 }
 
+tupl i2tupl(int num, int size) { return tupl(num / size, num % size); }
+
+int tupl2i(tupl num, int size) { return num.first * size + num.second; }
 template <class T> const T &max(const T &a, const T &b) {
   return (a < b) ? b : a;
 }

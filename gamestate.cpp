@@ -4,6 +4,16 @@
 class game {
 public:
   game(){};
+  game(game &right) {
+    this->size = right.size;
+    this->moves = right.moves;
+    this->current = right.current;
+    this->lastmove = right.lastmove;
+    this->prod = right.prod;
+    this->state1 = right.state1;
+    this->state2 = right.state2;
+    this->state3 = right.state3;
+  }
   game(int size, bool first) {
     this->size = size;
     this->moves = size * size;
@@ -11,11 +21,10 @@ public:
     this->state2 = matrix(size);
     this->state3 = matrix(size);
     if (first) {
-      this->c = 1; // first
+      current = 1;
     } else {
-      this->c = 2; // second
+      current = 2;
     }
-    this->h = 3 - this->c; // makes h the other guy
   }
   bool checkWon(matrix &m) {
     int current = 0;
@@ -82,14 +91,16 @@ public:
       return "";
     }
   } // returns string of who has won
-  void update(tupl move, int sig) {
-    if (sig == 1) {
+  void update(tupl move) {
+    if (current == 1) {
       this->state1(move) = 1;
-    } else if (sig == 2) {
+    } else if (current == 2) {
       this->state2(move) = 1;
     }
-    this->state3(move) = sig;
+    this->state3(move) = current;
     this->history.push_back(move);
+    current = 3 - current;
+    lastmove = move;
     moves--;
   }
   bool isFull() { return moves == 0; }
@@ -105,11 +116,11 @@ public:
   }
   int size;
   int moves;
+  int current;
+  tupl lastmove;
   bool prod;
   matrix state1;
   matrix state2;
   matrix state3;
-  int c; // color of computer. 1 = Dark, 2 = White
-  int h; // color of human
   tuplist history;
 };
