@@ -18,11 +18,20 @@
 // about that. you can just use the dummy functions below for now. this means
 // no rollouts, and no computation of upper confidence
 
+vpairf policy(game &g) {
+  return vpairf(0, 0);
+  // lol
+}
 // monte carlo tree search
 struct node {
   node(node *p, float prior) {
     this->p = prior;
     this->parent = p;
+  }
+  ~node() {
+    for (auto i : children) {
+      delete i.second;
+    }
   }
   node *parent;
   unordered_map<int, node *> children; // inefficient for looping?
@@ -77,7 +86,7 @@ public:
       avpair av = n->select(this->pucts);
       g.update(i2tupl(av.first, g.size));
     }
-    // vpairf av = policy(state);
+    vpairf av = policy(g);
     int leaf;
     if (g.isFull() || g.checkWon(g.state3)) {
       if (g.isFull()) {
@@ -91,7 +100,8 @@ public:
         leaf = -1;
       }
     } else {
-      // expand
+
+      n->expand(av);
     }
     n->update_recursive(-leaf);
   };
@@ -100,7 +110,8 @@ public:
     for (auto i : root->children) {
       if (last == i.first) {
         invicinity = true;
-        break;
+      } else {
+        delete i.second;
       }
     }
     if (invicinity) {
