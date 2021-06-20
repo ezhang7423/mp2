@@ -17,7 +17,7 @@ struct Opts {
     verbose: i32,
 }
 
-fn main() {
+fn parse_args() -> Opts {
     let opts: Opts = Opts::parse();
 
     if opts.n < 5 || opts.n > 18 {
@@ -33,5 +33,9 @@ fn main() {
         2 => println!("Tons of verbose info"),
         3 | _ => println!("Maximum supported verbosity is 2"),
     }
-    
+    return opts;
+}
+fn main() {
+    let opts: Opts = parse_args();
+    println!("Size of the board: {}", opts.n);
 }
