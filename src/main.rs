@@ -1,13 +1,13 @@
 use clap::{AppSettings, Clap};
 use std::process::exit;
 
-/// Play Gomoku against the robot
+/// Play Gomoku against the madam
 #[derive(Clap)]
 #[clap(version = "1.0", author = "Edwin Z. <ete@ucsb.edu>")]
 #[clap(setting = AppSettings::ColoredHelp)]
 struct Opts {
     /// Size of the board. 5 <= n <= 18
-    #[clap(short, long, default_value = "5")]
+    #[clap(short, long, default_value = "11")]
     n: u8,
     // /// Whether you go first or second
     // #[clap(short, long)]
@@ -31,11 +31,17 @@ fn parse_args() -> Opts {
         0 => println!("No verbose info"),
         1 => println!("Some verbose info"),
         2 => println!("Tons of verbose info"),
-        3 | _ => println!("Maximum supported verbosity is 2"),
+        3 | _ => {
+            println!("Maximum supported verbosity is 2");
+            exit(1)
+        }
     }
-    return opts;
+    opts
 }
+
 fn main() {
-    let opts: Opts = parse_args();
+    let opts = parse_args();
     println!("Size of the board: {}", opts.n);
+
+
 }

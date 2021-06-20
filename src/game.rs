@@ -1,0 +1,3 @@
+struct Game {
+    size: bruv,
+}
