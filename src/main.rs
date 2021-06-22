@@ -1,7 +1,9 @@
+mod bot;
+mod game;
+mod madam;
+
 use clap::{AppSettings, Clap};
 use std::process::exit;
-
-mod game;
 
 /// Play Gomoku against the madam
 #[derive(Clap)]
@@ -11,12 +13,9 @@ struct Opts {
     /// Size of the board. 5 <= n <= 18
     #[clap(short, long, default_value = "11")]
     n: usize,
-    // /// Whether you go first or second
-    // #[clap(short, long)]
-    // first: Option<bool>,
-    /// A level of verbosity, and can be used multiple times
-    #[clap(short, long, parse(from_occurrences))]
-    verbose: i32,
+    /// Whether you go first or second
+    #[clap(short, long)]
+    first: Option<bool>,
 }
 
 fn parse_args() -> Opts {
@@ -33,6 +32,7 @@ fn parse_args() -> Opts {
 fn main() {
     let opts = parse_args();
     println!("Size of the board: {}", opts.n);
+    println!("Your moves are denoted by '1'. The robot's moves are denoted by '2'\n");
     let mut game = game::Game::new(opts.n, None);
     game.start();
 }
