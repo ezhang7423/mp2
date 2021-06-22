@@ -1,5 +1,7 @@
 use ndarray::{Array, Ix2};
 
+
+
 enum GameCondition {
     NotStarted,
     InProgress,
@@ -23,9 +25,9 @@ pub struct Game {
 impl Game {
     fn finished(&self) -> bool {
         // check if Finished
-        let Finished = false;
+        let finished = false;
 
-        Finished
+        finished
     }
     fn get_move(&self) -> (usize, usize) {
         if matches!(self.current_player, Player::Human) {
