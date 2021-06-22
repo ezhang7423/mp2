@@ -33,6 +33,6 @@ fn parse_args() -> Opts {
 fn main() {
     let opts = parse_args();
     println!("Size of the board: {}", opts.n);
-    let game = game::Game::new(opts.n);
-    println!("{}", game.state);
+    let  game = game::Game::new(opts.n, None);
+    game.start();    
 }
