@@ -15,7 +15,7 @@ struct Opts {
     n: usize,
     /// Whether you go first or second
     #[clap(short, long)]
-    first: Option<bool>,
+    first: bool,
 }
 
 fn parse_args() -> Opts {
@@ -33,6 +33,6 @@ fn main() {
     let opts = parse_args();
     println!("Size of the board: {}", opts.n);
     println!("Your moves are denoted by '1'. The robot's moves are denoted by '2'\n");
-    let mut game = game::Game::new(opts.n, opts.first);
+    let mut game = game::Game::new(opts.n, Some(opts.first));
     game.start();
 }
