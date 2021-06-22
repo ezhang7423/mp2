@@ -80,11 +80,7 @@ impl Game {
         loop {
             loop {
                 let player_move = self.get_move();
-                if player_move.0 < 0
-                    || player_move.0 >= self.size
-                    || player_move.1 < 0
-                    || player_move.1 >= self.size
-                {
+                if player_move.0 >= self.size || player_move.1 >= self.size {
                     println!("Your move is out of bounds");
                     continue;
                 }
