@@ -15,7 +15,7 @@ enum Player {
     Bot = 2,
 }
 pub struct Game {
-    // size: usize,
+    size: usize,
     condition: GameCondition,
     current_player: Player,
     waiting_player: Player,
@@ -63,7 +63,7 @@ impl Game {
         } else {
             // idk
             println!("Robot is thinking...");
-            chosen_move = self.robot.get_move();
+            chosen_move = self.robot.get_move(&self.state, self.size);
             println!("Robot's move: {}, {}", chosen_move.0, chosen_move.1);
         }
         chosen_move
@@ -80,12 +80,20 @@ impl Game {
         loop {
             loop {
                 let player_move = self.get_move();
-                if self.state[player_move] == 0 {
-                    self.state[player_move] = self.current_player as usize;
-                    break;
-                } else {
-                    println!("There has already been a stone placed here")
+                if player_move.0 < 0
+                    || player_move.0 >= self.size
+                    || player_move.1 < 0
+                    || player_move.1 >= self.size
+                {
+                    println!("Your move is out of bounds");
+                    continue;
                 }
+                if self.state[player_move] != 0 {
+                    println!("There has already been a stone placed here");
+                    continue;
+                }
+                self.state[player_move] = self.current_player as usize;
+                break;
             }
 
             if self.finished() {
@@ -117,7 +125,7 @@ impl Game {
         let state = Array::<usize, _>::zeros((size, size));
 
         Self {
-            // size,
+            size,
             condition: GameCondition::NotStarted,
             current_player,
             waiting_player,
