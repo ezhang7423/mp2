@@ -33,6 +33,6 @@ fn main() {
     let opts = parse_args();
     println!("Size of the board: {}", opts.n);
     println!("Your moves are denoted by '1'. The robot's moves are denoted by '2'\n");
-    let mut game = game::Game::new(opts.n, None);
+    let mut game = game::Game::new(opts.n, opts.first);
     game.start();
 }

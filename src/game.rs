@@ -15,10 +15,8 @@ enum Player {
     Bot = 2,
 }
 pub struct Game {
-    size: usize,
+    // size: usize,
     condition: GameCondition,
-    // black: Player,
-    // white: Player,
     current_player: Player,
     waiting_player: Player,
     state: Array<usize, Ix2>,
@@ -119,10 +117,8 @@ impl Game {
         let state = Array::<usize, _>::zeros((size, size));
 
         Self {
-            size,
+            // size,
             condition: GameCondition::NotStarted,
-            // black,
-            // white,
             current_player,
             waiting_player,
             state: state,
