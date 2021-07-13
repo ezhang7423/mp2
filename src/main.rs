@@ -1,6 +1,10 @@
 mod bot;
 mod game;
-mod madam;
+mod madam {
+    mod head;
+    mod mcts;
+    pub use head::Madam;
+}
 
 use clap::{AppSettings, Clap};
 use std::process::exit;

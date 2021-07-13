@@ -4,33 +4,96 @@ use ndarray::{Array, Ix2};
 use std::io;
 use std::num::ParseIntError;
 
-enum GameCondition {
+pub enum GameCondition {
     NotStarted,
     InProgress,
     Finished,
 }
 #[derive(Copy, Clone)]
-enum Player {
+pub enum Player {
     Human = 1,
     Bot = 2,
 }
-pub struct Game {
-    size: usize,
-    condition: GameCondition,
-    current_player: Player,
+
+pub struct GameState {
+    pub current_player: Player,
+    pub size: usize,
     waiting_player: Player,
     state: Array<usize, Ix2>,
+}
+impl GameState {
+    pub fn new(size: usize, human_turn: Option<bool>) -> Self {
+        let human_turn = human_turn.unwrap_or(true);
+
+        // assume that human starts
+        let (mut current_player, mut waiting_player) = (Player::Human, Player::Bot);
+
+        if !human_turn {
+            // black = Player::Human;
+            // white = Player::Bot;
+            current_player = Player::Bot;
+            waiting_player = Player::Human
+        }
+
+        let state = Array::<usize, _>::zeros((size, size));
+        Self {
+            current_player,
+            size,
+            waiting_player,
+            state,
+        }
+    }
+
+    // returns whenther a move was succcessfully made or not
+    pub fn make_move(&mut self, player_move: (usize, usize)) -> bool {
+        if player_move.0 >= self.size || player_move.1 >= self.size {
+            println!("Your move is out of bounds");
+            return false;
+        }
+        if self.state[player_move] != 0 {
+            println!("There has already been a stone placed here");
+            return false;
+        }
+        self.state[player_move] = self.current_player as usize;
+
+        if !self.finished() {
+            // swap current and waiting
+            let tmp = self.waiting_player;
+            self.waiting_player = self.current_player;
+            self.current_player = tmp;
+        }
+        true
+    }
+    pub fn finished(&self) -> bool {
+        // check if Finished
+        let mut finished = false;
+
+        for i in 0..self.size {
+            let first_color = self.state[[i, 0]];
+            let mut successful = true;
+            for j in 0..self.size {
+                if self.state[[i, j]] == 0 || self.state[[i, j]] != first_color {
+                    successful = false;
+                    break;
+                }
+            }
+            if successful {
+                finished = true;
+                break;
+            }
+        }
+
+        finished
+    }
+}
+
+pub struct Game {
+    game_state: GameState,
+    condition: GameCondition,
     robot: Box<dyn Bot>,
 }
 
 impl Game {
-    fn finished(&self) -> bool {
-        // check if Finished
-        let finished = false;
-
-        finished
-    }
-
     fn parse_move(input_text: &str) -> Result<(usize, usize), ParseIntError> {
         let mut split = input_text.split(", ");
         Ok((
@@ -40,7 +103,7 @@ impl Game {
     }
     fn get_move(&self) -> (usize, usize) {
         let chosen_move: (usize, usize);
-        if matches!(self.current_player, Player::Human) {
+        if matches!(self.game_state.current_player, Player::Human) {
             self.print();
             loop {
                 println!("What's your move? e.g. '2, 3'");
@@ -63,7 +126,9 @@ impl Game {
         } else {
             // idk
             println!("Robot is thinking...");
-            chosen_move = self.robot.get_move(&self.state, self.size);
+            chosen_move = self
+                .robot
+                .get_move(&self.game_state.state, self.game_state.size);
             println!("Robot's move: {}, {}", chosen_move.0, chosen_move.1);
         }
         chosen_move
@@ -80,57 +145,27 @@ impl Game {
         loop {
             loop {
                 let player_move = self.get_move();
-                if player_move.0 >= self.size || player_move.1 >= self.size {
-                    println!("Your move is out of bounds");
-                    continue;
+                if self.game_state.make_move(player_move) {
+                    break;
                 }
-                if self.state[player_move] != 0 {
-                    println!("There has already been a stone placed here");
-                    continue;
-                }
-                self.state[player_move] = self.current_player as usize;
-                break;
             }
-
-            if self.finished() {
+            if self.game_state.finished() {
                 self.condition = GameCondition::Finished;
                 self.print();
                 break;
-            } else {
-                // swap current and waiting
-                let tmp = self.waiting_player;
-                self.waiting_player = self.current_player;
-                self.current_player = tmp;
             }
         }
     }
 
-    pub fn new(size: usize, human_first: Option<bool>) -> Self {
-        let human_first = human_first.unwrap_or(true);
-
-        // assume that human starts
-        let (mut current_player, mut waiting_player) = (Player::Human, Player::Bot);
-
-        if !human_first {
-            // black = Player::Human;
-            // white = Player::Bot;
-            current_player = Player::Bot;
-            waiting_player = Player::Human
-        }
-
-        let state = Array::<usize, _>::zeros((size, size));
-
+    pub fn new(size: usize, human_turn: Option<bool>) -> Self {
         Self {
-            size,
             condition: GameCondition::NotStarted,
-            current_player,
-            waiting_player,
-            state: state,
+            game_state: GameState::new(size, human_turn),
             robot: Box::new(madam::Madam {}),
         }
     }
 
     pub fn print(&self) {
-        println!("\n\n\n{}\n\n\n", self.state);
+        println!("\n\n\n{}\n\n\n", self.game_state.state);
     }
 }

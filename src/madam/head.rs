@@ -1,6 +1,8 @@
 use crate::bot::Bot;
 use ndarray::{Array, Ix2};
 use rand::Rng;
+use crate::madam::mcts;
+
 pub struct Madam {}
 
 impl Bot for Madam {
