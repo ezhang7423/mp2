@@ -2,7 +2,8 @@
 
 Reimplementing AlphaZero from scratch in rust. 
 
-Using GPU accelerated deep learning operations with SPIRV and [rust-gpu](https://github.com/EmbarkStudios/rust-gpu).
+Deep learning operations (conv, relu, batchnorm, pooling, softmax) implemented with SPIRV and [rust-gpu](https://github.com/EmbarkStudios/rust-gpu) for GPU acceleration.
+
 
 
 ## Resources
