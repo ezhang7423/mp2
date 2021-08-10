@@ -1,9 +1,18 @@
-use crate::bot::Bot;
+use crate::madam::mcts;
+use crate::{bot::Bot, game::GameState};
 use ndarray::{Array, Ix2};
 use rand::Rng;
-use crate::madam::mcts;
 
-pub struct Madam {}
+pub struct Madam {
+    move_tree: mcts::Tree,
+}
+impl Madam {
+    pub fn new(state: &GameState) -> Self {
+        Madam {
+            move_tree: mcts::Tree::new(state, None, None),
+        }
+    }
+}
 
 impl Bot for Madam {
     fn get_move(&self, state: &Array<usize, Ix2>, board_size: usize) -> (usize, usize) {

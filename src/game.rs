@@ -1,5 +1,5 @@
 use crate::bot::Bot;
-use crate::madam;
+use crate::madam::{self, Madam};
 use ndarray::{Array, Ix2};
 use std::io;
 use std::num::ParseIntError;
@@ -14,6 +14,7 @@ pub enum Player {
     Human = 1,
     Bot = 2,
 }
+pub type Pos = (usize, usize); // Position on board
 
 pub struct GameState {
     pub current_player: Player,
@@ -45,7 +46,7 @@ impl GameState {
     }
 
     // returns whenther a move was succcessfully made or not
-    pub fn make_move(&mut self, player_move: (usize, usize)) -> bool {
+    pub fn make_move(&mut self, player_move: Pos) -> bool {
         if player_move.0 >= self.size || player_move.1 >= self.size {
             println!("Your move is out of bounds");
             return false;
@@ -86,6 +87,16 @@ impl GameState {
         finished
     }
 }
+impl Clone for GameState {
+    fn clone(&self) -> Self {
+        GameState {
+            current_player: self.current_player,
+            size: self.size,
+            waiting_player: self.waiting_player,
+            state: self.state.clone(),
+        }
+    }
+}
 
 pub struct Game {
     game_state: GameState,
@@ -94,15 +105,15 @@ pub struct Game {
 }
 
 impl Game {
-    fn parse_move(input_text: &str) -> Result<(usize, usize), ParseIntError> {
+    fn parse_move(input_text: &str) -> Result<Pos, ParseIntError> {
         let mut split = input_text.split(", ");
         Ok((
             split.next().unwrap_or("fail").parse::<usize>()?,
             split.next().unwrap_or("fail").parse::<usize>()?,
         ))
     }
-    fn get_move(&self) -> (usize, usize) {
-        let chosen_move: (usize, usize);
+    fn get_move(&self) -> Pos {
+        let chosen_move: Pos;
         if matches!(self.game_state.current_player, Player::Human) {
             self.print();
             loop {
@@ -158,10 +169,11 @@ impl Game {
     }
 
     pub fn new(size: usize, human_turn: Option<bool>) -> Self {
+        let game_state = GameState::new(size, human_turn);
         Self {
             condition: GameCondition::NotStarted,
-            game_state: GameState::new(size, human_turn),
-            robot: Box::new(madam::Madam {}),
+            robot: Box::new(Madam::new(&game_state)),
+            game_state: game_state,
         }
     }
 
