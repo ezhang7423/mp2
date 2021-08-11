@@ -1,0 +1,12 @@
+[package]
+name = "gomoku"
+version = "0.1.0"
+edition = "2018"
+default-run = "web"
+
+
+[dependencies]
+backend = { path = "../web/backend" }
+clap = "3.0.0-beta.2"
+ndarray = "0.15.3"
+rand = "0.8.4"
