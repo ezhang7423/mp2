@@ -1,6 +1,7 @@
 use crate::bot::Bot;
 use crate::madam::{self, Madam};
 use ndarray::{Array, Ix2};
+use std::cmp::max;
 use std::io;
 use std::num::ParseIntError;
 
@@ -65,26 +66,87 @@ impl GameState {
         }
         true
     }
-    pub fn finished(&self) -> bool {
-        // check if Finished
-        let mut finished = false;
 
-        for i in 0..self.size {
-            let first_color = self.state[[i, 0]];
-            let mut successful = true;
-            for j in 0..self.size {
-                if self.state[[i, j]] == 0 || self.state[[i, j]] != first_color {
-                    successful = false;
-                    break;
-                }
-            }
-            if successful {
-                finished = true;
+    fn finished_helper(&self, i: usize, j: usize, horizontal: bool) -> bool {
+        let first_color = self.state[[i, j]];
+        let mut finished = true;
+        for delta in 0..5 {
+            // stop if there is any gap in the window
+            let test_color = if horizontal {
+                self.state[[i, j + delta]]
+            } else {
+                self.state[[i + delta, j]]
+            };
+
+            if test_color == 0 || test_color != first_color {
+                finished = false;
                 break;
             }
         }
-
         finished
+    }
+
+    fn finished_helper_diag(&self, left: bool) -> bool {
+        let sz = self.size as i32;
+        let iter_sz = sz - 4;
+
+        for diag in (-iter_sz + 1..iter_sz).rev() {
+            // println!("diag: {}", diag);
+            for diag_idx in 0..(sz - diag.abs() - 4) {
+                let i = max(diag, 0) + diag_idx;
+                let j = (i - diag) as usize;
+                let i = if left { i } else { sz - i - 1 } as usize;
+
+                let mut finished = true;
+                let first_color = self.state[[i, j]];
+
+                for delta in 0..5 {
+                    // println!("{}, {}", i + delta, j + delta);
+                    let test_color = if left {
+                        self.state[[i + delta, j + delta]]
+                    } else {
+                        self.state[[i - delta, j + delta]]
+                    };
+                    if test_color == 0 || test_color != first_color {
+                        finished = false;
+                        break;
+                    }
+                }
+                if finished {
+                    return true;
+                }
+            }
+        }
+        false
+    }
+
+    pub fn finished(&self) -> bool {
+        // check with a sliding window from left to right, top to bottom
+        for i in 0..self.size {
+            for j in 0..self.size - 4 {
+                if self.finished_helper(i, j, true) {
+                    return true;
+                }
+            }
+        }
+        // top to bottom, left to right
+        for j in 0..self.size {
+            for i in 0..self.size - 4 {
+                if self.finished_helper(i, j, false) {
+                    return true;
+                }
+            }
+        }
+
+        // left diagonal from left to right
+        if self.finished_helper_diag(true) {
+            return true;
+        }
+        if self.finished_helper_diag(false) {
+            return true;
+        }
+
+        false
     }
 }
 impl Clone for GameState {
@@ -122,7 +184,6 @@ impl Game {
                 io::stdin()
                     .read_line(&mut input_text)
                     .expect("Failed to read from stdin");
-
                 let trimmed = input_text.trim();
                 match Game::parse_move(trimmed) {
                     Ok(i) => {
@@ -161,8 +222,14 @@ impl Game {
                 }
             }
             if self.game_state.finished() {
-                self.condition = GameCondition::Finished;
                 self.print();
+                println!("Game finished. ");
+                if matches!(self.game_state.current_player, Player::Human) {
+                    println!("You won!")
+                } else {
+                    println!("You lost. Better luck next time.")
+                }
+                self.condition = GameCondition::Finished;
                 break;
             }
         }
