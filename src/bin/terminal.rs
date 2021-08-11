@@ -1,12 +1,5 @@
-mod bot;
-mod game;
-mod madam {
-    mod head;
-    mod mcts;
-    pub use head::Madam;
-}
-
 use clap::{AppSettings, Clap};
+use gomoku::game;
 use std::process::exit;
 
 /// Play Gomoku against the madam

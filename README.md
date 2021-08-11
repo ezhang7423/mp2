@@ -1,5 +1,15 @@
 # nn-lib
 
+To run, use `cargo run`
+To run just in terminal, use `cargo run --bin terminal`
+
+## Development
+
+```bash
+cargo install cargo-watch
+cargo watch -x run
+```
+
 Reimplementing AlphaZero from scratch in rust for gomoku.
 
 Deep learning operations (conv, relu, batchnorm, pooling, softmax) implemented with SPIRV and [rust-gpu](https://github.com/EmbarkStudios/rust-gpu).
