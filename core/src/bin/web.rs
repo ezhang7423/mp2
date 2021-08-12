@@ -1,4 +1,6 @@
 use backend::run_server;
+use futures::executor;
+
 fn main() {
-    run_server();
+    let res = run_server();
 }

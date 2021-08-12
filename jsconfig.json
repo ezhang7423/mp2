@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./web/frontend",
+    "paths": {
+      "~/*": ["./web/frontend/*"],
+      "@/*": ["./web/frontend/*"],
+      "~~/*": ["./web/frontend/*"],
+      "@@/*": ["./web/frontend/*"]
+    }
+  },
+  "exclude": ["node_modules", ".nuxt", "dist"]
+}
