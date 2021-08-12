@@ -1,5 +1,5 @@
 use clap::{AppSettings, Clap};
-use gomoku::game;
+use core::game;
 use std::process::exit;
 
 /// Play Gomoku against the madam

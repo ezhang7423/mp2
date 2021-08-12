@@ -519,6 +519,14 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a2df960f5d869b2dd8532793fde43eb5427cceb126c929747a26823ab0eeb536"
 
 [[package]]
+name = "core"
+version = "0.1.0"
+dependencies = [
+ "ndarray",
+ "rand 0.8.4",
+]
+
+[[package]]
 name = "cpufeatures"
 version = "0.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -763,8 +771,7 @@ name = "gomoku"
 version = "0.1.0"
 dependencies = [
  "clap",
- "ndarray",
- "rand 0.8.4",
+ "core",
  "server",
 ]
 
