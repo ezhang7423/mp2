@@ -7,11 +7,12 @@
         <p class="float-right">{{ size }}x{{ size }}</p>
       </div>
       <input
-        v-model="size"
+        :value="size"
         type="range"
         max="18"
         min="5"
         class="range range-xs"
+        @input="$emit('newSize', $event.target.value)"
       />
     </div>
 
@@ -49,11 +50,16 @@
 
 <script>
 export default {
+  props: {
+    size: {
+      type: Number,
+      required: true,
+    },
+  },
   data() {
     return {
       white: false,
       showDebug: true,
-      size: 11,
     }
   },
 }

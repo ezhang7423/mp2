@@ -2,34 +2,41 @@
   <div
     class="
       relative
-      flex
+      flex flex-col
       items-top
-      justify-center
+      align-center
       min-h-screen
       bg-gray-100
       sm:pt-0
     "
   >
-    <div class="max-w-screen-2xl sm:px-6 lg:px-8">
+    <div class="flex-grow max-w-screen-2xl w-full sm:px-6 lg:px-8">
       <div class="flex">
         <div
           class="mt-8 bg-white overflow-hidden shadow sm:rounded-lg p-6 mx-3"
+          style="height: fit-content"
         >
-          <h2 class="text-2xl leading-7 font-semibold">Play against Madam</h2>
-          <Grid />
+          <h3 class="text-xl pb-5">Controls</h3>
+          <Controls :size="size" @newSize="size = Number($event)" />
         </div>
+
         <div
           class="mt-8 bg-white overflow-hidden shadow sm:rounded-lg p-6 mx-3"
         >
-          <h3 class="text-xl pb-5">Controls</h3>
-          <Controls />
+          <Grid :size="size" />
         </div>
       </div>
-      <Footer />
     </div>
+    <Footer class="pb-5" />
   </div>
 </template>
 
 <script>
-export default {}
+export default {
+  data() {
+    return {
+      size: 11,
+    }
+  },
+}
 </script>
