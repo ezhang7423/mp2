@@ -4,7 +4,6 @@ module.exports = {
   // Notice: It only affects the settings used by Vetur.
   settings: {
     "vetur.useWorkspaceDependencies": true,
-    "vetur.experimental.templateInterpolationService": true,
   },
   // **optional** default: `[{ root: './' }]`
   // support monorepos
@@ -23,7 +22,7 @@ module.exports = {
       // **optional**
       // Where is TypeScript config file in the project?
       // It is relative to root property.
-      jsconfig: "../../jsconfig.json",
+      jsconfig: "./jsconfig.json",
       // **optional** default: `[]`
       // Register globally Vue component glob.
       // If you set it, you can get completion by that components.
