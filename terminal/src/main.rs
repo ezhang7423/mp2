@@ -1,6 +1,6 @@
 use clap::{AppSettings, Clap};
-use core::game;
 use std::process::exit;
+mod game;
 
 /// Play Gomoku against the madam
 #[derive(Clap)]
