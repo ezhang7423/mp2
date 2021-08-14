@@ -2,7 +2,7 @@
 
 Reimplementing AlphaZero from scratch in rust for gomoku.
 
-Deep learning operations (conv, relu, batchnorm, pooling, softmax) implemented with SPIRV and [rust-gpu](https://github.com/EmbarkStudios/rust-gpu).
+Frontend Inspiration from https://maximrud.github.io/rv2/
 
 ## Running
 
