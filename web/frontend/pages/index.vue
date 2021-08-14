@@ -38,5 +38,9 @@ export default {
       size: 11,
     }
   },
+  async mounted() {
+    let gamestate = this.$wasm.send_example_to_js()
+    console.log(gamestate)
+  },
 }
 </script>

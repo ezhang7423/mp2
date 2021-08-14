@@ -1,36 +1,42 @@
+use serde::{Deserialize, Serialize};
+
 use crate::bot::Bot;
-use crate::madam::{self, Madam};
+use crate::madam::Madam;
 use ndarray::{Array, Ix2};
 use std::cmp::max;
 use std::io;
 use std::num::ParseIntError;
 
+#[derive(Serialize, Deserialize)]
 pub enum GameCondition {
     NotStarted,
     InProgress,
     Finished,
 }
-#[derive(Copy, Clone)]
+
+#[derive(Copy, Clone, Serialize, Deserialize)]
 pub enum Player {
     Human = 1,
     Bot = 2,
 }
 pub type Pos = (usize, usize); // Position on board
 
+#[derive(Serialize, Deserialize)]
 pub struct GameState {
     pub current_player: Player,
     pub size: usize,
     waiting_player: Player,
     state: Array<usize, Ix2>,
 }
+
 impl GameState {
-    pub fn new(size: usize, human_turn: Option<bool>) -> Self {
-        let human_turn = human_turn.unwrap_or(true);
+    pub fn new(size: usize, human_first: Option<bool>) -> Self {
+        let human_first = human_first.unwrap_or(true);
 
         // assume that human starts
         let (mut current_player, mut waiting_player) = (Player::Human, Player::Bot);
 
-        if !human_turn {
+        if !human_first {
             // black = Player::Human;
             // white = Player::Bot;
             current_player = Player::Bot;
@@ -235,8 +241,8 @@ impl Game {
         }
     }
 
-    pub fn new(size: usize, human_turn: Option<bool>) -> Self {
-        let game_state = GameState::new(size, human_turn);
+    pub fn new(size: usize, human_first: Option<bool>) -> Self {
+        let game_state = GameState::new(size, human_first);
         Self {
             condition: GameCondition::NotStarted,
             robot: Box::new(Madam::new(&game_state)),

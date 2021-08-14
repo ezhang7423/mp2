@@ -50,7 +50,7 @@ td {
   background-size: 96px, 96px;
   background-repeat: repeat;
   background-position: 64px 64px;
-  background-image: url(https://maximrud.github.io/rv2/images/x64.png);
+  background-image: url(/x64.png);
 }
 
 td:nth-child(2) {
