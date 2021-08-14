@@ -1,3 +1,7 @@
 [workspace]
 members = ["core", "terminal", "web/wasm"]
 default-members = ["terminal"]
+
+[profile.release]
+# Tell `rustc` to optimize for small code size.
+opt-level = "s"
