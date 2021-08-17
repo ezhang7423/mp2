@@ -1,11 +1,6 @@
-use serde::{Deserialize, Serialize};
-
-use crate::bot::Bot;
-use crate::madam::Madam;
 use ndarray::{Array, Ix2};
+use serde::{Deserialize, Serialize};
 use std::cmp::max;
-use std::io;
-use std::num::ParseIntError;
 
 #[derive(Serialize, Deserialize)]
 pub enum GameCondition {
@@ -19,14 +14,18 @@ pub enum Player {
     Human = 1,
     Bot = 2,
 }
-pub type Pos = (usize, usize); // Position on board
+pub trait Bot {
+    fn get_move(&mut self, state: &GameState) -> (usize, usize);
+}
 
+pub type Pos = (usize, usize); // Position on board
+pub type StateTensor = Array<usize, Ix2>;
 #[derive(Serialize, Deserialize)]
 pub struct GameState {
     pub current_player: Player,
     pub size: usize,
     waiting_player: Player,
-    state: Array<usize, Ix2>,
+    state: StateTensor,
 }
 
 impl GameState {
@@ -51,7 +50,7 @@ impl GameState {
             state,
         }
     }
-    pub fn get_state(&self) -> Array<usize, Ix2> {
+    pub fn get_state(&self) -> StateTensor {
         return self.state.clone();
     }
     pub fn print(&self) {

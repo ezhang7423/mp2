@@ -1,25 +1,39 @@
-use crate::madam::mcts;
-use crate::{bot::Bot, game::GameState};
-use ndarray::{Array, Ix2};
-use rand::Rng;
+use onnxruntime::environment::Environment;
+use onnxruntime::session::Session;
+use onnxruntime::{GraphOptimizationLevel, LoggingLevel, OrtError};
 
-pub struct Madam {
+use crate::game::{Bot, GameState};
+use crate::madam::mcts;
+
+pub struct MadamTrain {
     move_tree: mcts::Tree,
+    network: String,
 }
-impl Madam {
-    pub fn new(state: &GameState) -> Self {
-        Madam {
+
+fn construct_model(onnx_path: &str) -> Result<Session, OrtError> {
+    let environment = Environment::builder()
+        .with_name("test")
+        .with_log_level(LoggingLevel::Verbose)
+        .build()?;
+    let session = environment
+        .new_session_builder()?
+        .with_optimization_level(GraphOptimizationLevel::Basic)?
+        .with_number_threads(1)?
+        .with_model_from_file(onnx_path)?;
+
+    return Ok(session);
+}
+impl MadamTrain {
+    pub fn new(onnx_path: &str, state: &GameState) -> Self {
+        MadamTrain {
             move_tree: mcts::Tree::new(state, None, None),
+            network: String::from(onnx_path),
         }
     }
 }
 
-impl Bot for Madam {
-    fn get_move(&self, state: &Array<usize, Ix2>, board_size: usize) -> (usize, usize) {
-        let mut rng = rand::thread_rng();
-
-        let n1: usize = rng.gen_range(0..board_size);
-        let n2: usize = rng.gen_range(0..board_size);
-        (n1, n2)
+impl Bot for MadamTrain {
+    fn get_move(&mut self, state: &GameState) -> (usize, usize) {
+        return self.move_tree.find_move(Some(state));
     }
 }

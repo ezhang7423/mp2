@@ -5,6 +5,7 @@ edition = "2018"
 
 
 [dependencies]
-ndarray = { version = "0.15.3", features = ["serde"] }
+ndarray = { version = "0.15.1", features = ["serde"] }
+onnxruntime = "0.0.14"
 rand = "0.8.4"
 serde = { version = "1.0", features = ["derive"] }

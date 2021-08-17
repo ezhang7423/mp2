@@ -1,6 +1,8 @@
-use core::{bot::Bot, game::{GameCondition, GameState, Player, Pos}, madam::Madam};
+use core::{
+    game::{Bot, GameCondition, GameState, Player, Pos},
+    madam::MadamTrain,
+};
 use std::{io, num::ParseIntError};
-
 
 pub struct Game {
     game_state: GameState,
@@ -40,9 +42,7 @@ impl Game {
         } else {
             // idk
             println!("Robot is thinking...");
-            chosen_move = self
-                .robot
-                .get_move(&self.game_state.get_state(), self.game_state.size);
+            chosen_move = self.robot.get_move(&self.game_state);
             println!("Robot's move: {}, {}", chosen_move.0, chosen_move.1);
         }
         chosen_move
