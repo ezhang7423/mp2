@@ -3,7 +3,12 @@ use std::{
     rc::{Rc, Weak},
 };
 
-use crate::game::{GameState, Pos};
+use crate::game::{GameState, Pos, StateTensor};
+
+
+pub trait NeuralNet {
+    fn get_pv(&mut self, state: &GameState) -> (StateTensor, f64);
+}
 
 //http://way-cooler.org/blog/2016/08/14/designing-a-bi-mutable-directional-tree-safely-in-rust.html
 //https://joshondesign.com/2020/04/08/rust5_tree
@@ -49,7 +54,10 @@ impl Tree {
         }
     }
 
-    fn find_move(&self) -> Pos {
+    pub fn find_move(&mut self, state: Option<&GameState>) -> Pos {
+        if !state.is_none() {
+            self.root = Node::new(None, state.unwrap().clone(), None);
+        } 
         for _ in 0..self.simulations {
             let node = self.select(&self.root);
             node.expand_children();
