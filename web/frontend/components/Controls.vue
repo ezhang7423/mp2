@@ -8,6 +8,7 @@
       </div>
       <input
         :value="size"
+        :disabled="condition === GameCondition.InProgress"
         type="range"
         max="18"
         min="5"
@@ -17,15 +18,15 @@
     </div>
 
     <!-- color -->
-    <div class="flex items-center pb-3" style="min-width: 150px">
-      <p class="mr-5">I play as {{ white ? 'White' : 'Black' }}</p>
+    <div class="flex items-center py-3" style="min-width: 150px">
+      <p class="mr-5">I play as {{ currentPlayer ? 'White' : 'Black' }}</p>
       <input
-        v-model="white"
+        :checked="!currentPlayer"
         type="radio"
         name="opt"
         class="radio"
-        :disabled="false"
-        @click="white = !white"
+        :disabled="condition === GameCondition.InProgress"
+        @click="$emit('switchCurrent')"
       />
     </div>
 
@@ -34,6 +35,7 @@
       <p class="mr-5">Show debug info</p>
       <input
         v-model="showDebug"
+        :disabled="condition === GameCondition.InProgress"
         type="checkbox"
         checked="checked"
         class="checkbox checkbox-accent"
@@ -41,26 +43,43 @@
     </div>
 
     <div>
-      <button class="btn-sm btn btn-outline">Back</button>
-      <button class="btn-sm btn btn-outline">Next</button>
-      <button class="btn-sm btn btn-outline">Resign</button>
+      <!-- <button class="btn-sm btn btn-outline">Back</button>
+      <button class="btn-sm btn btn-outline">Next</button> -->
+      <button class="btn-sm btn btn-outline" @click="changeCondition">
+        {{ condition === GameCondition.InProgress ? 'Resign' : 'Start' }}
+      </button>
     </div>
   </div>
 </template>
 
 <script>
+import { GameCondition } from '~/utils/enums'
 export default {
   props: {
     size: {
       type: Number,
       required: true,
     },
+    condition: {
+      type: Number,
+      required: true,
+    },
+    currentPlayer: {
+      type: Number,
+      required: true,
+    },
   },
   data() {
     return {
-      white: false,
+      GameCondition,
       showDebug: true,
     }
+  },
+
+  methods: {
+    changeCondition() {
+      this.$emit('changeCondition')
+    },
   },
 }
 </script>

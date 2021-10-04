@@ -1,20 +1,32 @@
+<!-- eslint-disable -->
 <template>
   <table>
     <tbody class="square-cells">
       <tr>
         <th></th>
-        <th v-for="i of rows" :key="`1-${i}`">{{ i }}</th>
+        <th v-for="(row, i) of state" :key="`1-${i}`">{{ i }}</th>
         <th></th>
       </tr>
-      <tr v-for="i of rows" :key="i" :data-row="i">
+      <tr v-for="(row, i) of state" :key="i" :data-row="i">
         <th>{{ i }}</th>
-        <td v-for="j of rows" :key="`${i}-${j}`">&nbsp;</td>
+        <td
+          @click="move(i, j)"
+          v-for="(col, j) of state[i]"
+          :style="{
+            'background-image':
+              state[i][j] === null
+                ? ''
+                : 'url(https://maximrud.github.io/rv2/images/x64b.png)',
+          }"
+          :key="`${i}-${j}`"
+        >
+          &nbsp;
+        </td>
         <th>{{ i }}</th>
       </tr>
-
       <tr>
         <th></th>
-        <th v-for="i of rows" :key="`end-${i}`">{{ i }}</th>
+        <th v-for="(row, i) of state" :key="`end-${i}`">{{ i }}</th>
         <th></th>
       </tr>
     </tbody>
@@ -24,11 +36,11 @@
 <script>
 export default {
   props: {
-    size: { type: Number, required: true },
+    state: { type: Array, required: true },
   },
-  computed: {
-    rows() {
-      return [...Array(this.size).keys()]
+  methods: {
+    move(row, column) {
+      this.$emit('move', [row, column])
     },
   },
 }
