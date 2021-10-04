@@ -18,10 +18,10 @@
         >
           <h3 class="text-xl pb-5">Controls</h3>
           <Controls
-            :current-player="current_player"
-            :condition="game_state.condition"
+            :current-player="gS.currentPlayer"
+            :condition="gS.condition"
             :size="size"
-            @switchCurrent="current_player = Number(!current_player)"
+            @switchCurrent="gS.currentPlayer = Number(!gS.currentPlayer)"
             @newSize="size = Number($event)"
             @changeCondition="changeCondition"
           />
@@ -31,7 +31,7 @@
           style=""
           class="mt-8 bg-white overflow-hidden shadow sm:rounded-lg p-6 mx-3"
         >
-          <Grid :state="game_state.state" @move="move" />
+          <Grid :state="gS.state" @move="cacheNextMove" />
         </div>
       </div>
     </div>
@@ -40,14 +40,17 @@
 </template>
 
 <script>
-import { GameCondition, Player } from '~/utils/enums'
+import { GameCondition, Player, Color } from '~/utils/enums'
 export default {
   data() {
     return {
       size: 11,
       nextMove: null,
-      current_player: Player.Human,
-      game_state: {
+      gameLoop: null,
+      gS: {
+        // gamestate
+        currentColor: Color.White,
+        currentPlayer: Player.Human,
         condition: GameCondition.NotStarted,
         state: [
           [null, null, null, null, null, null, null, null, null, null, null],
@@ -67,32 +70,55 @@ export default {
   },
   watch: {
     size() {
-      this.game_state.state = Array(this.size).fill(Array(this.size).fill(null))
+      this.gS.state = Array(this.size).fill(Array(this.size).fill(null))
     },
   },
+  mounted() {
+    this.startGameLoop()
+  },
   methods: {
+    cacheNextMove(rc) {
+      this.nextMove = rc
+    },
     move(rc) {
-      if (this.game_state.condition !== GameCondition.InProgress) return
-      // nextMove = $event
+      if (this.gS.condition !== GameCondition.InProgress || rc === null) return
+
       const [r, c] = rc
-      const newState = JSON.parse(JSON.stringify(this.game_state.state))
-      newState[r][c] = 1
-      this.$set(this.game_state, 'state', newState)
+      if (this.gS.state[r][c] !== null) return
+
+      const newState = JSON.parse(JSON.stringify(this.gS.state))
+      newState[r][c] = this.gS.currentColor
+      this.gS.currentColor = Number(!this.gS.currentColor)
+      this.$set(this.gS, 'state', newState)
     },
     startGameLoop() {
-      // while (game.not_finished()) {}
-      // this.game_state.condition = GameCondition.Finished
+      this.gS.condition = GameCondition.InProgress
+      this.gS.state = Array(this.size).fill(Array(this.size).fill(null))
+      function finished(gameState) {
+        return false
+      }
+      this.gameLoop = setInterval(() => {
+        if (finished(this.gS)) {
+          clearInterval(this.gameLoop)
+          this.gS.condition = GameCondition.Finished
+          return
+        }
+        if (this.gS.currentPlayer === Player.Robot) {
+          this.move(this.nextMove)
+        } else {
+          this.move(this.nextMove)
+        }
+        this.nextMove = null
+      }, 50)
     },
     changeCondition() {
-      if (this.game_state.condition === GameCondition.InProgress) {
-        this.game_state.condition = GameCondition.Finished
+      if (this.gS.condition === GameCondition.InProgress) {
+        this.gS.condition = GameCondition.Finished
         // do some other stuff
-      } else if (this.game_state.condition === GameCondition.NotStarted) {
-        this.game_state.condition = GameCondition.InProgress
+      } else if (this.gS.condition === GameCondition.NotStarted) {
         this.startGameLoop()
       } else {
         // condition is finished
-        this.game_state.condition = GameCondition.InProgress
         this.startGameLoop()
       }
     },

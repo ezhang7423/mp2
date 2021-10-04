@@ -13,10 +13,7 @@
           @click="move(i, j)"
           v-for="(col, j) of state[i]"
           :style="{
-            'background-image':
-              state[i][j] === null
-                ? ''
-                : 'url(https://maximrud.github.io/rv2/images/x64b.png)',
+            'background-image': bgImg(i, j),
           }"
           :key="`${i}-${j}`"
         >
@@ -34,11 +31,22 @@
 </template>
 
 <script>
+import { Color } from '~/utils/enums'
 export default {
   props: {
     state: { type: Array, required: true },
   },
   methods: {
+    bgImg(row, column) {
+      if (this.state[row][column] === null) {
+        return ''
+      }
+      if (this.state[row][column] === Color.Black) {
+        return 'url(/game/x64b.png)'
+      } else {
+        return 'url(/game/x64w.png)'
+      }
+    },
     move(row, column) {
       this.$emit('move', [row, column])
     },
@@ -62,7 +70,7 @@ td {
   background-size: 96px, 96px;
   background-repeat: repeat;
   background-position: 64px 64px;
-  background-image: url(https://maximrud.github.io/rv2/images/x64.png);
+  background-image: url(/game/x64.png);
 }
 
 td:nth-child(2) {
