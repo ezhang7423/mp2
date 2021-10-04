@@ -41,6 +41,7 @@
 
 <script>
 import { GameCondition, Player, Color } from '~/utils/enums'
+import finished from '~/utils/finished'
 export default {
   data() {
     return {
@@ -80,36 +81,41 @@ export default {
     cacheNextMove(rc) {
       this.nextMove = rc
     },
-    move(rc) {
-      if (this.gS.condition !== GameCondition.InProgress || rc === null) return
+    validMove() {
+      if (this.nextMove == null) return false
+      if (this.gS.state[this.nextMove[0]][this.nextMove[1]] !== null)
+        return false // if this spot is already filled
 
-      const [r, c] = rc
-      if (this.gS.state[r][c] !== null) return
+      return true
+    },
+    async playerMove() {
+      const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+      while (!this.validMove()) {
+        // while we don't have a valid move
+        await delay(100)
+      }
 
       const newState = JSON.parse(JSON.stringify(this.gS.state))
+      const [r, c] = this.nextMove
+
       newState[r][c] = this.gS.currentColor
       this.gS.currentColor = Number(!this.gS.currentColor)
       this.$set(this.gS, 'state', newState)
     },
-    startGameLoop() {
+    async startGameLoop() {
       this.gS.condition = GameCondition.InProgress
       this.gS.state = Array(this.size).fill(Array(this.size).fill(null))
-      function finished(gameState) {
-        return false
-      }
-      this.gameLoop = setInterval(() => {
-        if (finished(this.gS)) {
-          clearInterval(this.gameLoop)
-          this.gS.condition = GameCondition.Finished
-          return
-        }
+
+      while (!finished(this.gS.state)) {
         if (this.gS.currentPlayer === Player.Robot) {
-          this.move(this.nextMove)
+          await this.playerMove() // sub for backend call
         } else {
-          this.move(this.nextMove)
+          await this.playerMove()
         }
         this.nextMove = null
-      }, 50)
+      }
+
+      this.gS.condition = GameCondition.Finished
     },
     changeCondition() {
       if (this.gS.condition === GameCondition.InProgress) {

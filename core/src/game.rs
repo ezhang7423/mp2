@@ -80,7 +80,7 @@ impl GameState {
                 self.state[[i + delta, j]]
             };
 
-            if test_color == 0 || test_color != first_color {
+            if test_color != first_color {
                 finished = false;
                 break;
             }
@@ -101,6 +101,9 @@ impl GameState {
 
                 let mut finished = true;
                 let first_color = self.state[[i, j]];
+                if first_color == 0 {
+                    continue;
+                };
 
                 for delta in 0..5 {
                     // println!("{}, {}", i + delta, j + delta);
@@ -109,7 +112,7 @@ impl GameState {
                     } else {
                         self.state[[i - delta, j + delta]]
                     };
-                    if test_color == 0 || test_color != first_color {
+                    if test_color != first_color {
                         finished = false;
                         break;
                     }
@@ -126,7 +129,7 @@ impl GameState {
         // check with a sliding window from left to right, top to bottom
         for i in 0..self.size {
             for j in 0..self.size - 4 {
-                if self.finished_helper(i, j, true) {
+                if self.state[[i, j]] != 0 && self.finished_helper(i, j, true) {
                     return true;
                 }
             }
@@ -134,7 +137,7 @@ impl GameState {
         // top to bottom, left to right
         for j in 0..self.size {
             for i in 0..self.size - 4 {
-                if self.finished_helper(i, j, false) {
+                if self.state[[i, j]] != 0 && self.finished_helper(i, j, false) {
                     return true;
                 }
             }
