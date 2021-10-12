@@ -20,6 +20,7 @@ impl Game {
             split.next().unwrap_or("fail").parse::<usize>()?,
         ))
     }
+
     fn get_move(&self) -> Pos {
         let chosen_move: Pos;
         if matches!(self.game_state.current_player, Player::Human) {
