@@ -1,3 +1,5 @@
+use crate::utils::Shared;
+use generational_arena::Arena;
 use std::{
     cell::RefCell,
     rc::{Rc, Weak},
@@ -19,6 +21,7 @@ pub struct Node {
     children: NodeChildren,
     state: GameState,
     action: Option<Pos>,
+    test: Shared<Arena<Node>>,
 }
 
 impl Node {
